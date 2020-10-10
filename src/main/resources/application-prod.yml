@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    username: root
+    password: 981710Tzc
+    url: jdbc:mysql://localhost:3306/mysite?useUnicode=true&useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+
+shiro-redis:
+  enabnle: true
+  redis-manager:
+    host: 127.0.0.1:6379
+    password: 123456
+
+markerhub:
+  jwt:
+    # 加密密钥
+    secret: f4e2e52034348f86b67cde581c9f9eb5
+    # token 有效时长：7天，单位秒
+    expire: 604800
+    header: Authorization
