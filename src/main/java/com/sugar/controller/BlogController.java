@@ -9,6 +9,8 @@ import com.sugar.common.lang.Result;
 import com.sugar.entity.Blog;
 import com.sugar.service.BlogService;
 import com.sugar.utils.ShiroUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +20,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+@Api(tags = "Blog博客相关类")
 @RestController
 public class BlogController {
 
     @Autowired
     BlogService blogService;
 
+    @ApiOperation("Get-分页获取所有博文（5条）")
     @GetMapping("/blogs")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
 
         Page page = new Page(currentPage, 5);
         IPage pageData = blogService.page(page, new QueryWrapper<Blog>().orderByDesc("created"));
-
         return Result.success(pageData);
     }
 
+    @ApiOperation("Get-根据ID获取博文")
     @GetMapping("/blog/{id}")
     public Result detail(@PathVariable("id") Long id) {
         Blog blog = blogService.getById(id);
@@ -40,6 +44,7 @@ public class BlogController {
         return Result.success(blog);
     }
 
+    @ApiOperation("Post-编辑/发布博文")
     @RequiresAuthentication
     @PostMapping("/blog/edit")
     public Result edit(@Validated @RequestBody Blog blog) {

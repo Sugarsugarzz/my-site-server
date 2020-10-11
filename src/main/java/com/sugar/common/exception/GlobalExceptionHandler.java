@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Optional;
 
+// 全局异常处理类
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

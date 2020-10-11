@@ -8,6 +8,8 @@ import com.sugar.dto.LoginDto;
 import com.sugar.entity.User;
 import com.sugar.service.UserService;
 import com.sugar.utils.JwtUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
+@Api(tags = "Account账号校验类")
 @RestController
 public class AccountController {
 
@@ -28,6 +31,7 @@ public class AccountController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @ApiOperation("Post-登录")
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) {
 
@@ -54,6 +58,7 @@ public class AccountController {
         );
     }
 
+    @ApiOperation("Get-注销")
     @RequiresAuthentication
     @GetMapping("/logout")
     public Result logout() {
