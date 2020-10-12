@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Api(tags = "Blog博客相关类")
 @RestController
@@ -27,11 +28,10 @@ public class BlogController {
     @Autowired
     BlogService blogService;
 
-    @ApiOperation("Get-分页获取所有博文（5条）")
+    @ApiOperation("Get-分页获取博文")
     @GetMapping("/blogs")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-
-        Page page = new Page(currentPage, 5);
+        Page page = new Page(currentPage, 8);
         IPage pageData = blogService.page(page, new QueryWrapper<Blog>().orderByDesc("created"));
         return Result.success(pageData);
     }
@@ -44,12 +44,26 @@ public class BlogController {
         return Result.success(blog);
     }
 
-    @ApiOperation("Post-编辑/发布博文")
+    @ApiOperation("Get-根据CategoryID获取博文")
+    @GetMapping("/blog/category/{id}")
+    public Result category_list(@PathVariable("id") Long id) {
+        List<Blog> blogs = blogService.list(new QueryWrapper<Blog>().eq("category", id));
+        return Result.success(blogs);
+    }
+
+    @ApiOperation("Post-根据ID删除博文")
+    @PostMapping("/blog/delete/{id}")
+    public Result delete(@PathVariable("id") Long id) {
+        blogService.removeById(id);
+        return Result.success(null);
+    }
+
+    @ApiOperation("Post-发布/编辑博文")
     @RequiresAuthentication
     @PostMapping("/blog/edit")
-    public Result edit(@Validated @RequestBody Blog blog) {
+    public Result addOrUpdate(@Validated @RequestBody Blog blog) {
 
-        Blog temp = null;
+        Blog temp;
         // 如果有id，则为编辑状态；无id，则为添加状态
         if (blog.getId() != null) {
             temp = blogService.getById(blog.getId());
@@ -58,12 +72,8 @@ public class BlogController {
         } else {
             temp = new Blog();
             temp.setUserId(ShiroUtil.getProfile().getId());
-            temp.setCreated(LocalDateTime.now());
-            temp.setStatus(0);
         }
-
-        // 编辑
-        BeanUtil.copyProperties(blog, temp, "id", "userId", "created", "status");
+        BeanUtil.copyProperties(blog, temp, "id", "userId");
         blogService.saveOrUpdate(temp);
 
         return Result.success(null);

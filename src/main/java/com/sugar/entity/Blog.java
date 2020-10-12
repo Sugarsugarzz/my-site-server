@@ -35,10 +35,15 @@ public class Blog implements Serializable {
     @NotBlank(message = "内容不能为空")
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Long category;
+
+    private String tags;
+
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDateTime created;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDateTime updated;
+
     private Integer status;
-
-
 }
