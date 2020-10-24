@@ -31,8 +31,8 @@ public class BlogController {
     @ApiOperation("Get-分页获取博文")
     @GetMapping("/blogs")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-        Page page = new Page(currentPage, 8);
-        IPage pageData = blogService.page(page, new QueryWrapper<Blog>().orderByDesc("created"));
+        Page page = new Page(currentPage, 6);
+        IPage pageData = blogService.page(page, new QueryWrapper<Blog>().select("id", "user_id", "title", "description", "category", "tags", "created").eq("status", 1).orderByDesc("created"));
         return Result.success(pageData);
     }
 
