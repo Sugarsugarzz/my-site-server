@@ -28,11 +28,13 @@ public class BlogController {
     @Autowired
     BlogService blogService;
 
-    @ApiOperation("Get-分页获取博文")
+    @ApiOperation("Get-分页获取博文基本信息")
     @GetMapping("/blogs")
-    public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-        Page page = new Page(currentPage, 6);
-        IPage pageData = blogService.page(page, new QueryWrapper<Blog>().select("id", "user_id", "title", "description", "category", "tags", "created").eq("status", 1).orderByDesc("created"));
+    public Result list(@RequestParam(defaultValue = "1") Integer currentPage, Integer pageSize) {
+        Page page = new Page(currentPage, pageSize);
+        IPage pageData = blogService.page(page, new QueryWrapper<Blog>().select("id", "user_id", "title", "description", "category", "tags", "created")
+                                                                        .eq("status", 1)
+                                                                        .orderByDesc("created"));
         return Result.success(pageData);
     }
 
@@ -54,7 +56,9 @@ public class BlogController {
     @ApiOperation("Post-根据ID删除博文")
     @PostMapping("/blog/delete/{id}")
     public Result delete(@PathVariable("id") Long id) {
-        blogService.removeById(id);
+        Blog b = new Blog();
+        b.setId(id).setStatus(0);
+        blogService.updateById(b);
         return Result.success(null);
     }
 

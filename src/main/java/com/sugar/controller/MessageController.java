@@ -22,8 +22,8 @@ public class MessageController {
 
     @ApiOperation("Get-分页获取留言")
     @GetMapping("/messages")
-    public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-        Page page = new Page(currentPage, 10);
+    public Result list(@RequestParam(defaultValue = "1") Integer currentPage, Integer pageSize) {
+        Page page = new Page(currentPage, pageSize);
         IPage pageData = messageService.page(page, new QueryWrapper<Message>().orderByDesc("created"));
         return Result.success(pageData);
     }
@@ -31,16 +31,16 @@ public class MessageController {
     @ApiOperation("Post-根据ID删除留言")
     @PostMapping("/message/delete/{id}")
     public Result delete(@PathVariable("id") Long id) {
-        messageService.removeById(id);
+        Message m = new Message();
+        m.setId(id).setStatus(0);
+        messageService.updateById(m);
         return Result.success(null);
     }
 
     @ApiOperation("Post-添加留言")
     @PostMapping("/message/add")
     public Result add(@Validated @RequestBody Message message) {
-        Message msg = new Message();
-        BeanUtil.copyProperties(message, msg);
-        messageService.saveOrUpdate(msg);
+        messageService.saveOrUpdate(message);
         return Result.success(null);
     }
 

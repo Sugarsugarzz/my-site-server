@@ -1,6 +1,7 @@
 package com.sugar.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sugar.common.lang.Result;
 import com.sugar.entity.Tag;
 import com.sugar.service.TagService;
@@ -22,23 +23,29 @@ public class TagController {
     @ApiOperation("Get-获取所有标签")
     @GetMapping("/tags")
     public Result list() {
-        List<Tag> tags = tagService.list();
+        List<Tag> tags = tagService.list(new QueryWrapper<Tag>().eq("status", 1));
         return Result.success(tags);
     }
 
     @ApiOperation("Post-根据ID删除标签")
     @PostMapping("/tag/delete/{id}")
     public Result delete(@PathVariable("id") Long id) {
-        tagService.removeById(id);
+        Tag t = new Tag();
+        t.setId(id).setStatus(0);
+        tagService.updateById(t);
         return Result.success(null);
     }
 
     @ApiOperation("Post-添加标签")
     @PostMapping("/tag/add")
     public Result add(@Validated @RequestBody Tag tag) {
-        Tag t = new Tag();
-        BeanUtil.copyProperties(tag, t);
-        tagService.saveOrUpdate(t);
+        Tag t = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName()));
+        if (t == null) {
+            tagService.saveOrUpdate(tag);
+        } else {
+            t.setStatus(1);
+            tagService.updateById(t);
+        }
         return Result.success(null);
     }
 }
