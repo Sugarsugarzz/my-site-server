@@ -24,7 +24,7 @@ public class MessageController {
     @GetMapping("/messages")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage, Integer pageSize) {
         Page page = new Page(currentPage, pageSize);
-        IPage pageData = messageService.page(page, new QueryWrapper<Message>().orderByDesc("created"));
+        IPage pageData = messageService.page(page, new QueryWrapper<Message>().orderByDesc("created").eq("status", 1));
         return Result.success(pageData);
     }
 
